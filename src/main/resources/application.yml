@@ -1,1 +1,7 @@
+spring:
+  data:
+    redis:
+      host: apn1-bold-skink-34077.upstash.io
+      port: 34077
+      password: ${REDIS-PASSWORD}
 

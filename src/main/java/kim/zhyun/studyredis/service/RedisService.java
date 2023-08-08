@@ -1,11 +1,15 @@
 package kim.zhyun.studyredis.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kim.zhyun.studyredis.dto.TestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -14,7 +18,9 @@ import java.util.Objects;
 public class RedisService {
 
     private final String KEY = "test-key";
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final ObjectMapper objectMapper;
 
 
     public String process(String stringData) {
@@ -48,5 +54,30 @@ public class RedisService {
     private String getKey(String stringData) {
         // 보통 redis 는 depth 를 구분할때 : 를 사용한다.
         return KEY + ":" + stringData;
+    }
+
+    /**
+     * Hash 자료구조
+     */
+    public void hashData(String data) {
+        TestDto testDto = TestDto.of("zhyun", 12345, "/board");
+
+        // 저장된 key가 있는지 확인
+        Boolean hasKey = redisTemplate.hasKey(data);
+
+        if (Objects.isNull(hasKey) || !hasKey) {
+            // HSET
+            redisTemplate.opsForHash().putAll(
+                    data,
+                    objectMapper.convertValue(testDto, HashMap.class)
+            );
+
+            // HGETALL
+            Map<Object, Object> map = redisTemplate.opsForHash().entries(data);
+
+            // 값 확인
+            log.info("👉 is same {} ", Objects.equals(testDto, objectMapper.convertValue(map, TestDto.class)));
+            map.forEach((o, o2) -> log.info("🐢 key :: {} , val :: {}", o, o2));
+        }
     }
 }

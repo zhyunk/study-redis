@@ -19,4 +19,10 @@ public class RedisController {
         log.info("🥃🐢 process result :: {}", result);
         return "하이";
     }
+
+    @GetMapping("/hash")
+    public String hash(){
+        service.hashData("test");
+        return "hash test";
+    }
 }

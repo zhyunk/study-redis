@@ -25,4 +25,10 @@ public class RedisController {
         service.hashData("test");
         return "hash test";
     }
+
+    @GetMapping("/pipe")
+    public String pipeline(){
+        service.pipeline("test");
+        return "pipeline test";
+    }
 }

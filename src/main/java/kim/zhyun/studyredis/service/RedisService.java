@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kim.zhyun.studyredis.dto.TestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -79,5 +79,36 @@ public class RedisService {
         // 값 확인
         log.info("👉 is same {} ", Objects.equals(testDto, objectMapper.convertValue(map, TestDto.class)));
         map.forEach((o, o2) -> log.info("🐢 key :: {} , val :: {}", o, o2));
+    }
+
+    /**
+     * pipeline
+     */
+    public void pipeline(String data) {
+        List<TestDto> list = List.of(
+                TestDto.of("김가나", 12345, "/a"),
+                TestDto.of("김다라", 23456, "/b"),
+                TestDto.of("김마바", 34567, "/c"),
+                TestDto.of("김사아", 45678, "/d"),
+                TestDto.of("김자차", 56789, "/e")
+        );
+
+        List<Object> pipelined = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            RedisSerializer<String> keySerializer = redisTemplate.getStringSerializer();
+
+            list.forEach(dto -> {
+                objectMapper.convertValue(dto, Map.class).forEach((key, val) -> {
+                    connection.hashCommands().hMSet(
+                            keySerializer.serialize("reserve#" + data + UUID.randomUUID()),
+                            dto.getByteMap()
+                    );
+                });
+            });
+
+            return null;
+        });
+
+        log.info("pipelined size is {}", pipelined.size());
+        pipelined.forEach(o -> log.info("what is {}", o.toString()));
     }
 }

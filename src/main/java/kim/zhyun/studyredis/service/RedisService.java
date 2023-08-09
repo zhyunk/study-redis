@@ -71,13 +71,13 @@ public class RedisService {
                     data,
                     objectMapper.convertValue(testDto, HashMap.class)
             );
-
-            // HGETALL
-            Map<Object, Object> map = redisTemplate.opsForHash().entries(data);
-
-            // 값 확인
-            log.info("👉 is same {} ", Objects.equals(testDto, objectMapper.convertValue(map, TestDto.class)));
-            map.forEach((o, o2) -> log.info("🐢 key :: {} , val :: {}", o, o2));
         }
+
+        // HGETALL
+        Map<Object, Object> map = redisTemplate.opsForHash().entries(data);
+
+        // 값 확인
+        log.info("👉 is same {} ", Objects.equals(testDto, objectMapper.convertValue(map, TestDto.class)));
+        map.forEach((o, o2) -> log.info("🐢 key :: {} , val :: {}", o, o2));
     }
 }

@@ -100,7 +100,7 @@ public class RedisService {
                 objectMapper.convertValue(dto, Map.class).forEach((key, val) -> {
                     connection.hashCommands().hMSet(
                             keySerializer.serialize("reserve#" + data + UUID.randomUUID()),
-                            dto.getByteMap()
+                            dto.makeByteMap()
                     );
                 });
             });

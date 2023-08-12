@@ -12,7 +12,7 @@ public record TestDto (
     }
 
 
-    public Map<byte[], byte[]> getByteMap() {
+    public Map<byte[], byte[]> makeByteMap() {
         return Map.of(
                 "name".getBytes(),      name().getBytes(),
                 "postcode".getBytes(),  String.valueOf(postcode()).getBytes(),

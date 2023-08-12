@@ -6,6 +6,7 @@ import kim.zhyun.studyredis.dto.TestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
@@ -160,7 +161,10 @@ public class RedisService {
                 "store",
                 GeoReference.fromCoordinate(new Point(127.047365178682, 37.5471882244091)),
                 new Distance(100, Metrics.KILOMETERS),
-                RedisGeoCommands.GeoSearchCommandArgs.newGeoSearchArgs().sort(Sort.Direction.ASC)
+                RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()
+                        .sort(Sort.Direction.ASC)
+                        .includeCoordinates()
+                        .includeDistance()
         ).forEach(result -> log.info("🐒 {}", result));
 
     }

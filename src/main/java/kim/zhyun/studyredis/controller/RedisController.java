@@ -31,4 +31,10 @@ public class RedisController {
         service.pipeline("test");
         return "pipeline test";
     }
+
+    @GetMapping("/set")
+    public String set(){
+        service.set();
+        return "set test";
+    }
 }

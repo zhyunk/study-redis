@@ -111,4 +111,18 @@ public class RedisService {
         log.info("pipelined size is {}", pipelined.size());
         pipelined.forEach(o -> log.info("what is {}", o.toString()));
     }
+
+    /**
+     * set
+     */
+    public void set() {
+        redisTemplate.opsForSet().add("testSet", TestDto.of("김가나", 12345, "/ㅁ").toString());
+        redisTemplate.opsForSet().add("testSet", TestDto.of("김다라", 12345, "/ㄴ").toString());
+        redisTemplate.opsForSet().add("testSet", TestDto.of("김가나", 12345, "/ㅁ").toString());
+        redisTemplate.opsForSet().add("testSet", TestDto.of("김가나", 12345, "/ㅁ").toString());
+
+        int[] idx = {1};
+        log.info("include 👇");
+        redisTemplate.opsForSet().members("testSet").forEach(o -> log.info(" {}. {}", idx[0]++, o));
+    }
 }

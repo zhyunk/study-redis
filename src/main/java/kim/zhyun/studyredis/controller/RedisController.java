@@ -37,4 +37,10 @@ public class RedisController {
         service.set();
         return "set test";
     }
+
+    @GetMapping("/geo")
+    public String geo(){
+        service.geospecial();
+        return "geospecial test";
+    }
 }

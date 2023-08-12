@@ -1,7 +1,7 @@
 spring:
   data:
     redis:
-      host: apn1-bold-skink-34077.upstash.io
-      port: 34077
+      host: apn1-brave-bat-33197.upstash.io
+      port: 33197
       password: ${REDIS-PASSWORD}
 

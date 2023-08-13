@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -44,13 +45,7 @@ public class RedisGeoService {
         Long added = redisTemplate.opsForGeo().add(
                 KEY,
                 list.stream()
-                    .map(dto -> {
-                        try {
-                            return dto.makeGeoLocation(objectMapper.writeValueAsString(dto));
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
+                    .map(dto -> dto.makeGeoLocation(getJsonFromDto(dto)))
                     .collect(Collectors.toList())
         );
         log.info("added {}", added);
@@ -64,18 +59,29 @@ public class RedisGeoService {
                         .includeCoordinates()
                         .includeDistance()
         ).forEach(result -> {
-            try {
                 log.info(
                         "🗺️ [{}] name : {} , Point : {}, Distance : {}",
                         KEY,
-                        objectMapper.readValue(result.getContent().getName(), StoreDto.class).name(),
+                        getDtoFromJson(result).name(),
                         result.getContent().getPoint(),
                         result.getDistance()
                 );
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
         });
 
+    }
+
+    private String getJsonFromDto(StoreDto dto) {
+        try {
+            return objectMapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private StoreDto getDtoFromJson(GeoResult<RedisGeoCommands.GeoLocation<String>> result) {
+        try {
+            return objectMapper.readValue(result.getContent().getName(), StoreDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

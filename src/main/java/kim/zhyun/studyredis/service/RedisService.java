@@ -1,25 +1,16 @@
 package kim.zhyun.studyredis.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kim.zhyun.studyredis.dto.StoreDto;
 import kim.zhyun.studyredis.dto.TestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.domain.geo.GeoReference;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -133,39 +124,5 @@ public class RedisService {
         int[] idx = {1};
         log.info("include 👇");
         redisTemplate.opsForSet().members("testSet").forEach(o -> log.info(" {}. {}", idx[0]++, o));
-    }
-
-    /**
-     * geospecial
-     */
-    public void geospecial() {
-        List<StoreDto> list = List.of(
-                StoreDto.of("a", 126.290992371209, 34.5121745149379),
-                StoreDto.of("b", 127.041688751305, 37.5481104648655),
-                StoreDto.of("c", 127.028065727387, 37.4986232309429),
-                StoreDto.of("d", 129.300837210054, 35.5507005286619),
-                StoreDto.of("e", 127.086439879278, 37.622218884578),
-                StoreDto.of("f", 127.111270068545, 37.7337789487014),
-                StoreDto.of("g", 127.044608514359, 36.4804589952686)
-        );
-
-        Long added = redisTemplate.opsForGeo().add(
-                "store",
-                list.stream()
-                        .map(StoreDto::makeGeoLocation)
-                        .collect(Collectors.toList())
-        );
-        log.info("added {}",added);
-
-        redisTemplate.opsForGeo().search(
-                "store",
-                GeoReference.fromCoordinate(new Point(127.047365178682, 37.5471882244091)),
-                new Distance(100, Metrics.KILOMETERS),
-                RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()
-                        .sort(Sort.Direction.ASC)
-                        .includeCoordinates()
-                        .includeDistance()
-        ).forEach(result -> log.info("🐒 {}", result));
-
     }
 }

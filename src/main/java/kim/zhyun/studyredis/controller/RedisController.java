@@ -1,5 +1,6 @@
 package kim.zhyun.studyredis.controller;
 
+import kim.zhyun.studyredis.service.RedisGeoService;
 import kim.zhyun.studyredis.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RedisController {
 
     private final RedisService service;
+    private final RedisGeoService geoService;
 
     @GetMapping("/")
     public String main(){
@@ -40,7 +42,7 @@ public class RedisController {
 
     @GetMapping("/geo")
     public String geo(){
-        service.geospecial();
+        geoService.geospecial();
         return "geospecial test";
     }
 }

@@ -25,7 +25,7 @@ public class RedisGeoService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    private final String KEY = "STORE";
+    private final String KEY = "store";
 
     public void geospecial() {
         List<StoreDto> list = getData();

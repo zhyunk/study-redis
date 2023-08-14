@@ -1,13 +1,10 @@
 package kim.zhyun.studyredis.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kim.zhyun.studyredis.dto.StoreDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -23,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RedisGeoService {
     private final RedisTemplate<String, String> redisTemplate;
-    private final ObjectMapper objectMapper;
 
     private final String KEY = "store";
 
@@ -41,8 +37,8 @@ public class RedisGeoService {
         Long added = redisTemplate.opsForGeo().add(
                 KEY,
                 list.stream()
-                    .map(dto -> dto.makeGeoLocation(getJsonFromDto(dto)))
-                    .collect(Collectors.toList())
+                        .map(StoreDto::makeGeoLocation)
+                        .collect(Collectors.toList())
         );
         log.info("added {}", added);
     }
@@ -60,7 +56,7 @@ public class RedisGeoService {
             log.info(
                     "🗺️ [{}] name : {} , Point : {}, Distance : {}",
                     KEY,
-                    getDtoFromJson(result).name(),
+                    StoreDto.from(result).name(),
                     result.getContent().getPoint(),
                     result.getDistance()
             );
@@ -79,18 +75,4 @@ public class RedisGeoService {
         );
     }
 
-    private String getJsonFromDto(StoreDto dto) {
-        try {
-            return objectMapper.writeValueAsString(dto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private StoreDto getDtoFromJson(GeoResult<RedisGeoCommands.GeoLocation<String>> result) {
-        try {
-            return objectMapper.readValue(result.getContent().getName(), StoreDto.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

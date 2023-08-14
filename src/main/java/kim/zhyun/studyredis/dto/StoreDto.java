@@ -1,5 +1,8 @@
 package kim.zhyun.studyredis.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 
@@ -17,10 +20,26 @@ public record StoreDto (
     public static StoreDto of (Long id, String name, Double x, Double y, String postcode) {
         return new StoreDto(id, name, x, y, postcode);
     }
-    public RedisGeoCommands.GeoLocation<String> makeGeoLocation(String key) {
-        return new RedisGeoCommands.GeoLocation<String>(
-                key,
-                new Point(x(), y())
-        );
+
+    public static RedisGeoCommands.GeoLocation<String> makeGeoLocation(StoreDto dto) {
+        try {
+            return new RedisGeoCommands.GeoLocation<String>(
+                    new ObjectMapper().writeValueAsString(dto),
+                    new Point(dto.x(), dto.y())
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static StoreDto from(GeoResult<RedisGeoCommands.GeoLocation<String>> result) {
+        try {
+            return new ObjectMapper().readValue(
+                    result.getContent().getName(),
+                    StoreDto.class
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

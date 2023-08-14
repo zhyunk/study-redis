@@ -37,7 +37,7 @@ public class RedisGeoService {
         Long added = redisTemplate.opsForGeo().add(
                 KEY,
                 list.stream()
-                        .map(StoreDto::makeGeoLocation)
+                        .map(StoreDto::toGeoLocation)
                         .collect(Collectors.toList())
         );
         log.info("added {}", added);

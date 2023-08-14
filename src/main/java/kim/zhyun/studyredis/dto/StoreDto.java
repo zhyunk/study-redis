@@ -21,7 +21,7 @@ public record StoreDto (
         return new StoreDto(id, name, x, y, postcode);
     }
 
-    public static RedisGeoCommands.GeoLocation<String> makeGeoLocation(StoreDto dto) {
+    public static RedisGeoCommands.GeoLocation<String> toGeoLocation(StoreDto dto) {
         try {
             return new RedisGeoCommands.GeoLocation<String>(
                     new ObjectMapper().writeValueAsString(dto),

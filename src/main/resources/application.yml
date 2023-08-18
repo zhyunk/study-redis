@@ -1,7 +1,15 @@
 spring:
+  config:
+    import: vault://
+
+  cloud:
+    vault:
+      uri: https://vault.zhyun.kim
+      token: ${VAULT_TOKEN}
+      kv:
+        default-context: study-redis
+
   data:
     redis:
       host: apn1-brave-bat-33197.upstash.io
       port: 33197
-      password: ${REDIS-PASSWORD}
-
